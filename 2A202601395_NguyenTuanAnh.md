@@ -1,5 +1,6 @@
 #
 Phase 1
+####
 Mô tả ngắn bài toán
 1
 VinFast
