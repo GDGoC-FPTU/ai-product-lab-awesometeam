@@ -1,76 +1,157 @@
-# Lab 02 — Deep Dive Report
+# Lab 02 - Deep-Dive Report
 
-## Thông tin nhóm
-- Tên nhóm: Awesome Team
-- Thành viên đóng góp:
-  - Thành viên 1 — MSSV: [chưa cập nhật]
-  - Thành viên 2 — MSSV: [chưa cập nhật]
+## Bài Toán Được Chọn
 
----
+**Trợ lý điều phối sạc khẩn cấp cho tài xế Xanh SM khi xe điện sắp hết pin.**
 
-## Quyết định lựa chọn bài toán
-Nhóm lựa chọn bài toán: **Xanh SM — Sự cố pin thực địa của tài xế EV taxi**.
+Nhóm chọn bài toán này vì đây là tình huống vận hành có thời gian xử lý ngắn, ảnh hưởng trực tiếp đến tài xế và khách hàng, có metric định lượng rõ và có boundary an toàn phù hợp để kết hợp rule-based code với LLM draft.
 
-Lý do chọn:
-- Bài toán có thể đo được bằng thời gian xử lý và có tác động trực tiếp tới SLA vận hành.
-- Dữ liệu đầu vào và output có cấu trúc rõ: vị trí xe, trạng thái pin, trạm sạc gần nhất, tin nhắn hướng dẫn.
-- Rủi ro có thể kiểm soát bằng human-in-the-loop và fallback thủ công.
+## 1. Current-State Workflow
 
----
-
-## Problem Statement (6-field)
-
-| Field | Nội dung |
-|---|---|
-| **1. Actor / Operator** | Điều phối viên trung tâm Xanh SM đang xử lý sự cố pin của tài xế EV taxi. |
-| **2. Current Workflow** | Khi tài xế báo hết pin giữa đường, điều phối viên phải mở hệ thống định vị, tra trạm sạc gần nhất, đối chiếu loại cổng sạc, soạn tin nhắn hướng dẫn, và nếu pin < 5% thì gọi xe cứu hộ. |
-| **3. Bottleneck** | Bước tra cứu trạm sạc còn trụ trống và bước soạn tin nhắn hướng dẫn là chậm nhất, mất khoảng 10-12 phút/lượt. |
-| **4. Business Impact** | Mỗi sự cố pin kéo theo thời gian chờ xe, tăng áp lực đội điều vận, và có thể làm mất doanh thu do tài xế không thể tiếp tục chuyến. |
-| **5. Success Metric** | Giảm thời gian xử lý sự cố từ 12 phút xuống dưới 3 phút; đạt 95% độ chính xác khi lựa chọn trạm sạc hoặc xe cứu hộ. |
-| **6. Operational Boundary** | AI được phép đề xuất trạm sạc, định vị và soạn nháp tin nhắn; AI tuyệt đối không được tự động gửi tin cho tài xế mà không qua phê duyệt. Nếu pin <= 5%, AI phải không đề xuất trạm sạc xa hơn 5km và phải trả về lệnh dispatch_mobile_charger. |
-
----
-
-## Future-State Flow & AI Fit
-
-### AI Fit
-- Chọn: **LLM Feature**
-- Không chọn Agentic Loop vì quy trình hiện đã có cấu trúc rõ ràng, rủi ro cao nếu AI tự ra quyết định mà không được hậu kiểm.
-
-### Future-State Flow
 ```text
-Tài xế báo sự cố pin
-    ↓
-Điều phối viên mở hệ thống
-    ↓
-🔵 AI truy xuất vị trí xe + dữ liệu trạm sạc
-    ↓
-🔵 AI soạn nháp tin nhắn / đề xuất trạm phù hợp
-    ↓
-🟢 Dispatcher kiểm duyệt và gửi tin
-    ↓
-↩️ Fallback: nếu AI không chắc chắn, quay về workflow thủ công cũ
+Tài xế phát hiện pin yếu
+  -> Gọi tổng đài hoặc gửi yêu cầu trên app
+     Actor: Tài xế
+     Time: 1 phút
+
+Điều phối viên nhận yêu cầu
+  -> Hỏi mức pin, vị trí, loại xe, trạng thái đang chở khách hay không
+     Handoff: Tài xế -> Điều phối viên
+     Time: 2 phút
+
+Điều phối viên tra cứu bản đồ và dashboard trạm sạc
+  -> Tìm các trạm sạc gần nhất, kiểm tra khoảng cách và khả năng phù hợp
+     Handoff: Điều phối viên -> Hệ thống bản đồ/trạm sạc
+     Time: 3 phút
+
+Điều phối viên đánh giá an toàn thủ công
+  -> Nếu pin quá thấp, cân nhắc xe cứu hộ sạc pin di động
+     Bottleneck: dễ sai khi pin dưới 5% nhưng trạm gần nhất vẫn quá xa
+     Time: 2 phút
+
+Điều phối viên soạn hướng dẫn
+  -> Gửi tin nhắn cho tài xế hoặc điều phối xe cứu hộ theo quy trình nội bộ
+     Handoff: Điều phối viên -> Tài xế / đội cứu hộ
+     Time: 2 phút
+
+Tổng thời gian trung bình: 10 phút/lượt.
+Bottleneck chính: tra cứu nhiều nguồn và đánh giá an toàn trong tình huống pin rất thấp.
 ```
 
+## 2. Problem Statement 6-Field
+
+### 2.1 Actor / Operator
+
+Tài xế Xanh SM và điều phối viên trung tâm điều phối. Tài xế cần phương án nhanh, còn điều phối viên cần ra quyết định an toàn dựa trên mức pin, vị trí, loại xe, khoảng cách trạm sạc và trạng thái trạm.
+
+### 2.2 Current Workflow
+
+Khi xe gần hết pin, tài xế liên hệ trung tâm điều phối. Điều phối viên thu thập mức pin, vị trí, loại xe, trạng thái chuyến xe và tra cứu dashboard trạm sạc. Sau đó điều phối viên đánh giá xem xe có thể đến trạm sạc hay phải gọi xe cứu hộ sạc pin di động, rồi soạn hướng dẫn gửi lại cho tài xế.
+
+### 2.3 Bottleneck
+
+Điều phối viên phải tra cứu thủ công nhiều nguồn dữ liệu trong thời gian ngắn. Khi pin dưới 5%, việc đề xuất trạm sạc xa hơn 5 km có rủi ro làm xe hết pin giữa đường. Bottleneck nằm ở bước tra cứu trạm, đánh giá an toàn và soạn hướng dẫn.
+
+### 2.4 Business Impact
+
+- Mỗi yêu cầu tốn trung bình 10 phút xử lý thủ công.
+- Xe dừng lâu làm giảm thời gian phục vụ khách và giảm doanh thu/chuyến.
+- Tài xế bị áp lực, dễ hủy chuyến hoặc trễ đón khách.
+- Nếu quyết định sai, Xanh SM có thể phải điều xe cứu hộ, ảnh hưởng trải nghiệm khách hàng và hình ảnh vận hành xe điện.
+
+### 2.5 Success Metrics
+
+- Tạo phương án xử lý dưới 30 giây cho mỗi yêu cầu có đủ dữ liệu.
+- Giảm thời gian điều phối từ 10 phút xuống dưới 2 phút/lượt.
+- Ít nhất 90% đề xuất được điều phối viên chấp nhận mà không cần sửa lớn.
+- 100% trường hợp pin dưới 5% không đề xuất trạm sạc xa hơn 5 km.
+- 100% output bắt đầu bằng `[DRAFT_ONLY]`.
+- 0 tin nhắn hoặc lệnh thực tế được thực hiện khi chưa có điều phối viên phê duyệt.
+
+### 2.6 Operational Boundary
+
+AI được phép:
+
+- Phân tích thông tin đầu vào: mức pin, vị trí, loại xe, khoảng cách trạm sạc và trạng thái trạm.
+- Tạo khuyến nghị dạng nháp cho điều phối viên.
+- Soạn tin nhắn nháp cho tài xế với tag `[DRAFT_ONLY]`.
+- Nếu thiếu dữ liệu, liệt kê thông tin cần bổ sung.
+
+AI không được phép:
+
+- Tự gửi tin nhắn cho tài xế.
+- Tự đặt trạm sạc, tự điều xe cứu hộ hoặc tự cập nhật hệ thống điều phối.
+- Bỏ qua bước điều phối viên phê duyệt.
+- Đề xuất trạm sạc xa hơn 5 km khi pin dưới 5%.
+- Bịa đặt tọa độ, mức pin, tình trạng trạm sạc hoặc hành động đã thực hiện.
+
+Quy tắc an toàn bắt buộc:
+
+```json
+{
+  "if": "battery_percent < 5 and nearest_safe_station_km > 5",
+  "action": "dispatch_mobile_charger",
+  "requires_human_approval": true
+}
+```
+
+## 3. AI Fit: Rule vs LLM vs Agent
+
+| Phương án | Ưu điểm | Nhược điểm | Quyết định |
+|---|---|---|---|
+| Rule-based | Ổn định, dễ kiểm soát điều kiện pin, khoảng cách và ngưỡng an toàn | Không linh hoạt khi soạn hướng dẫn tự nhiên cho tài xế | Dùng làm safety gate bắt buộc |
+| LLM Feature | Hiểu yêu cầu tự nhiên, tóm tắt tình huống, soạn tin nhắn rõ ràng | Có thể hallucinate hoặc bị prompt injection nếu không có boundary | Dùng để tạo draft |
+| Agentic Loop | Có thể tự gọi API, tìm trạm, điều xe | Rủi ro cao vì có hành động thật trong tình huống an toàn vận hành | Chưa dùng trong prototype |
+
+**Kiến trúc được chọn:** Rule-based Safety Gate + LLM Draft + Human-in-the-loop.
+
+## 4. Future-State Flow
+
+```text
+Tài xế gửi yêu cầu
+  -> Hệ thống đọc mức pin, vị trí, loại xe
+  -> Rule Engine kiểm tra dữ liệu bắt buộc
+  -> Rule Engine kiểm tra ngưỡng pin và khoảng cách
+      - Nếu pin < 5% và trạm an toàn xa hơn 5 km:
+        tạo action draft: dispatch_mobile_charger
+      - Nếu pin >= 5% hoặc trạm gần nằm trong ngưỡng an toàn:
+        đề xuất trạm sạc phù hợp
+  -> LLM tạo nội dung [DRAFT_ONLY] bằng ngôn ngữ dễ hiểu
+  -> Điều phối viên review
+  -> Điều phối viên sửa/phê duyệt
+  -> Hệ thống mới gửi hướng dẫn cho tài xế hoặc tạo yêu cầu cứu hộ
+```
+
+### AI Step
+
+LLM chỉ tạo bản nháp khuyến nghị và tin nhắn. Rule Engine xử lý các điều kiện định lượng có rủi ro cao.
+
 ### Human-in-the-loop
-- Người điều phối viên **bắt buộc phê duyệt** trước khi gửi tin nhắn.
-- Nếu AI đưa ra quyết định về xe cứu hộ hoặc trạm sạc, hành động phải được kiểm tra lại bằng quy tắc nghiệp vụ.
 
----
+Điều phối viên bắt buộc xem lại output trước khi bất kỳ tin nhắn nào được gửi hoặc bất kỳ xe cứu hộ nào được điều động.
 
-## Evaluate
+### Fallback
 
-### AI Readiness Checklist
-1. [x] Chúng tôi có sẵn dữ liệu mẫu/logs sạch để test.
-2. [x] Rủi ro khi AI sai có nằm trong tầm kiểm soát qua HITL hoặc Fallback.
-3. [x] Stakeholders sẵn sàng thay đổi quy trình làm việc cũ.
+- Thiếu mức pin, vị trí hoặc loại xe: dừng quy trình AI và yêu cầu tài xế bổ sung thông tin.
+- Gemini timeout: dùng template rule-based có sẵn.
+- Output không bắt đầu bằng `[DRAFT_ONLY]`: chặn output và tạo lại.
+- Output sai JSON hoặc vi phạm boundary: không hiển thị cho tài xế, gắn cờ review cho trưởng ca.
 
-### Quyết định cuối cùng
-- **GO**
+## 5. Evaluation
 
-### Justification
-Dự án này phù hợp để bắt đầu prototype vì:
-- Hệ thống có scope hẹp và dễ đo lường.
-- Có thể dùng LLM để draft tin nhắn và chọn trạm sạc gần nhất.
-- Rủi ro an toàn được kiểm soát tốt bằng rule-based guardrails và phê duyệt của con người.
-- Chi phí triển khai thấp hơn so với xây dựng agentic pipeline phức tạp.
+| Câu hỏi readiness | Kết quả | Ghi chú |
+|---|---|---|
+| Có dữ liệu mẫu/log để test? | Có một phần | Cần lấy log điều phối đã ẩn danh, dữ liệu trạm sạc mẫu và case pin yếu. |
+| Rủi ro AI sai có kiểm soát được? | Có | Rule gate kiểm tra pin/khoảng cách, LLM chỉ tạo draft, human review bắt buộc. |
+| Stakeholder sẵn sàng đổi workflow? | Có thể thử nhỏ | Nên pilot với một nhóm điều phối viên trong giờ thấp điểm trước. |
+
+## Final Decision: GO
+
+Nhóm quyết định **GO** với prototype scope hẹp. Lý do: bài toán có metric rõ, boundary định lượng, rủi ro có thể kiểm soát bằng rule gate và human review. Không nên xây agent tự động hành động trong giai đoạn đầu; prototype chỉ nên tạo khuyến nghị và tin nhắn nháp.
+
+Ước lượng chi phí prototype:
+
+- 1 AI/Product Engineer trong 1-2 tuần để hoàn thiện prompt, adversarial test và logging.
+- 1 Backend Engineer trong 1-2 tuần để nối dữ liệu mẫu về pin, vị trí và trạm sạc.
+- 1 Operations reviewer từ Xanh SM để đánh giá 50-100 case mẫu.
+- Chi phí API thấp trong pilot vì mỗi request chỉ tạo một draft ngắn.
