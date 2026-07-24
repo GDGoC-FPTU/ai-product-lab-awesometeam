@@ -1,173 +1,246 @@
-# Lab 02 — Worksheet: AI Product Scoping (Vin Smart Future)
+# Lab 02 - Worksheet: AI Product Scoping
 
----
+## 1. Bối Cảnh: Vin Smart Future
 
-## 🏛️ 1. Bối cảnh thực tế: Vin Smart Future (Vingroup)
+**Vin Smart Future** là đơn vị công nghệ giả định chịu trách nhiệm tìm kiếm, scope và thử nghiệm các giải pháp AI cho các công ty thành viên Vingroup như VinFast, Xanh SM, Vinhomes, Vinmec, Vinpearl và VinWonders.
 
-**Vingroup** — Tập đoàn tư nhân lớn nhất Việt Nam — vừa sáp nhập toàn bộ các phòng ban công nghệ thuộc các công ty thành viên thành một đơn vị công nghệ thống nhất mang tên **Vin Smart Future**. 
+Trong lab này, nhóm đóng vai **AI Product Engineer**. Nhiệm vụ là chọn một bài toán vận hành thực tế, phân tích workflow hiện tại, xác định ranh giới vận hành và xây dựng prompt prototype để kiểm thử an toàn.
 
-Nhiệm vụ của **Vin Smart Future** là xây dựng các giải pháp AI, số hóa, và tự động hóa cốt lõi để nâng cao hiệu suất vận hành và trải nghiệm khách hàng xuyên suốt các công ty thành viên:
-* 🚗 **VinFast:** Hệ thống xe điện thông minh (EV), trợ lý AI ảo trong xe, dự đoán bảo trì pin, và quản lý chuỗi cung ứng sản xuất.
-* 🚕 **Xanh SM (GSM):** Vận hành đội xe taxi/xe máy điện thông minh, điều vận thông minh (Smart Dispatching), tối ưu hóa lộ trình di chuyển.
-* 🏢 **Vinhomes:** Quản lý đô thị thông minh (Smart Cities), trợ lý cư dân thông minh, tối ưu hóa mức tiêu thụ năng lượng.
-* 🏥 **Vinmec:** Y tế thông minh, chẩn đoán hình ảnh bằng AI, tối ưu hóa quản lý hồ sơ bệnh án.
-* 🎢 **Vinpearl / VinWonders:** Trải nghiệm du lịch số hóa, quản lý phòng và luồng khách thông minh tại các khu vui chơi.
+Repo này thống nhất chọn bài toán:
 
-Trong buổi Lab hôm nay, nhóm của bạn sẽ đóng vai trò là **AI Product Engineer** tại **Vin Smart Future**, tiến hành tìm kiếm, scoping, phân tích độ khả thi, thiết lập ranh giới vận hành, và xây dựng một **bản mẫu kỹ thuật (prompt prototype)** cho một bài toán cụ thể thuộc một trong những mảng kinh doanh trên.
+> **Trợ lý điều phối sạc khẩn cấp cho tài xế Xanh SM khi xe điện sắp hết pin.**
 
----
+## 2. Cơ Cấu Tính Điểm
 
-## 📊 2. Cơ cấu tính điểm bài lab
-
-### 👥 Điểm nhóm (60 điểm)
+### Điểm nhóm: 60 điểm
 
 | Gate | Điểm | Deliverable | Tiêu chí chấm |
 |---|---:|---|---|
-| **G1. Workflow Mapping** | 20 | Problem Deep-Dive | Vẽ chi tiết quy trình hiện tại: các bước, handoff, thời gian, bottleneck |
-| **G2. Problem Statement** | 20 | Problem Deep-Dive | Problem Statement 6-field bám sát thực tế, metric có số và ranh giới rõ ràng |
-| **G3. AI Fit & Future Flow** | 10 | Problem Deep-Dive | So sánh Rule vs LLM vs Agent, future flow có bước AI, ranh giới và Fallback |
-| **G4. Decision Quality** | 10 | Problem Deep-Dive | Quyết định Go/Not Yet/No-Go trung thực và có chứng cứ rõ ràng |
+| G1. Workflow Mapping | 20 | `02-deep-dive-report.md` và `04-workflow-diagram.png` | Quy trình hiện tại có bước, handoff, thời gian và bottleneck rõ |
+| G2. Problem Statement | 20 | `02-deep-dive-report.md` | Problem Statement 6-field có metric và boundary cụ thể |
+| G3. AI Fit & Future Flow | 10 | `02-deep-dive-report.md` | So sánh Rule, LLM, Agent; có future flow, fallback và HITL |
+| G4. Decision Quality | 10 | `02-deep-dive-report.md` | Quyết định GO / NOT YET / NO-GO có bằng chứng |
 
-### 👤 Điểm cá nhân (40 điểm)
+### Điểm cá nhân: 40 điểm
 
 | Gate | Điểm | Deliverable | Tiêu chí chấm |
 |---|---:|---|---|
-| **I1. Scan & Cards** | 15 | Quick Cards | Liệt kê 5 problems sử dụng 3 lenses, hoàn thiện 3 quick cards chất lượng |
-| **I2. Prototyping** | 10 | 02-lab/ | Chạy thử nghiệm programmatic prompt prototype thành công |
-| **I3. AI Log & Reflection** | 15 | 03-ai-log.md | Phản ánh trung thực về việc dùng AI làm thought-partner (giúp gì, sai gì, sửa gì) |
+| I1. Scan & Cards | 15 | `01-problem-scan.md` | Có ít nhất 5 bài toán và 3 Quick Problem Cards |
+| I2. Prototyping | 10 | `starter-code/prompt_prototype.py` | Chạy được prompt prototype và boundary tests |
+| I3. AI Log & Reflection | 15 | `03-ai-log.md` | Phản ánh trung thực: AI giúp gì, sai gì, nhóm sửa gì |
 
 ---
 
-# 🚀 Phase 0 — worked Example: Xanh SM Intelligent Dispatcher (15 min)
+# Phase 1 - SCAN
 
-*Giảng viên walk-through ví dụ thực tế từ Vin Smart Future để bạn hiểu rõ cách scoping một bài toán AI.*
-Đọc chi tiết worked example tại file [02-deliverable-example.md](02-deliverable-example.md).
+Dùng 4 lenses để quét bài toán vận hành:
 
----
+1. **Repetitive:** Tác vụ lặp đi lặp lại nhiều lần mỗi ngày.
+2. **Time-consuming:** Tác vụ thủ công tốn nhiều thời gian.
+3. **AI-upgrade:** Quy trình hiện tại có thể tốt hơn nếu có AI hỗ trợ.
+4. **Stakeholder Pain:** Bottleneck khiến khách hàng, nhân viên hoặc đối tác phàn nàn.
 
-# 🔍 Phase 1 — SCAN (Cá nhân, 20 min)
+## Danh Sách Bài Toán
 
-Hãy sử dụng **4 Lenses** dưới đây để quét qua hoạt động vận hành của các công ty thành viên Vingroup. Ghi lại **ít nhất 5 bài toán/bottleneck** thực tế.
-
-### 4 Lenses tìm bài toán AI cho Vingroup:
-1. **Lặp lại (Repetitive):** Tác vụ lặp đi lặp lại nhiều lần hằng ngày. (Ví dụ: So khớp hóa đơn sạc điện tại VinFast, route lại chuyến taxi tại Xanh SM).
-2. **Tốn thời gian (Time-consuming):** Tác vụ ngốn thời gian xử lý thủ công của nhân viên. (Ví dụ: Soạn thảo phản hồi đánh giá 1-star của cư dân Vinhomes).
-3. **AI có thể tốt hơn (AI-upgrade):** Dịch vụ khách hàng hiện tại còn chậm hoặc phản hồi rập khuôn. (Ví dụ: Chatbot CSKH Vinpearl hỗ trợ đặt vé vui chơi).
-4. **Pain từ người khác (Stakeholder Pain):** Bottleneck khiến khách hàng hoặc nhân viên thực địa phàn nàn. (Ví dụ: Tài xế Xanh SM phàn nàn về việc hệ thống gợi ý điểm đón khách không chính xác).
-
-> [!TIP]
-> **🤖 AI Prompts — Partner brainstorm:**
-> Hãy sử dụng prompt sau để brainstorm các bài toán thực tế nếu bạn chưa có ý tưởng:
-> *"Tôi là AI Engineer tại Vin Smart Future (Vingroup). Tôi đang tìm kiếm các pain point vận hành cụ thể có thể tối ưu bằng AI cho mảng [Chọn một: VinFast / Xanh SM / Vinhomes / Vinmec]. Hãy gợi ý cho tôi 5 quy trình nghiệp vụ thủ công, tốn nhiều thời gian và gây rò rỉ hiệu suất kèm con số thống kê ước tính về tổn thất."*
-
-### 📝 List bài toán của tôi:
-| # | Subsidiary (VinFast/Xanh SM...) | Lens | Mô tả ngắn bài toán |
-|---|----------------------------------|------|---------------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
+| # | Công ty | Lens | Mô tả ngắn bài toán |
+|---|---|---|---|
+| 1 | Xanh SM | Stakeholder Pain | Tài xế xe điện pin yếu cần phương án sạc hoặc cứu hộ nhanh, tránh hết pin giữa đường. |
+| 2 | Xanh SM | Repetitive | Điều phối viên phải gán lại chuyến xe liên tục khi tài xế thiếu pin, kẹt xe hoặc hủy chuyến. |
+| 3 | Vinhomes | Time-consuming | CSKH đọc và route phản ánh cư dân đến đúng bộ phận thủ công. |
+| 4 | VinFast | AI-upgrade | Đội kỹ thuật phân tích log pin và lịch sử sạc để dự đoán bảo trì xe điện. |
+| 5 | Vinpearl / VinWonders | Repetitive | CSKH trả lời lặp lại câu hỏi về vé, giờ mở cửa, đổi ngày và hoàn tiền. |
+| 6 | Vinmec | Time-consuming | Bác sĩ soạn tóm tắt xuất viện từ nhiều nguồn dữ liệu lâm sàng. |
 
 ---
 
-# 🃏 Phase 2 — QUICK-ASSESS (Cá nhân, 30 min)
+# Phase 2 - QUICK-ASSESS
 
-Chọn **top 3 bài toán** từ danh sách trên và hoàn thiện **3 Quick Problem Cards** dưới đây (10 phút/card).
+## Quick Problem Card 1
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ QUICK PROBLEM CARD #___                                     │
-│                                                             │
-│ Bài toán (1 câu): ________________________________________  │
-│ Công ty thành viên: [ ] VinFast  [ ] Xanh SM  [ ] Vinhomes  │
-│                     [ ] Vinmec   [ ] Khác (Ghi rõ)________  │
-│                                                             │
-│ Ai đang đau (Actor)? ______________________________________ │
-│                                                             │
-│ Workflow thủ công hiện tại (3-5 bước):                      │
-│   1. ___ ──> 2. ___ ──> 3. ___ ──> 4. ___                   │
-│                                                             │
-│ Bước nào tốn thời gian/lỗi nhất? ___ (⏱ ___ phút/lượt)      │
-│ AI có thể nhảy vào hỗ trợ ở bước nào? _____________________ │
-│                                                             │
-│ Đo thành công bằng gì (Metric có số)? ______________________ │
-│   VD: "Giảm thời gian soạn phản hồi từ 10 min ──> under 2 min"│
-│                                                             │
-│ Quick Architecture: [ ] No AI  [ ] Rule  [ ] LLM  [ ] Agent │
-└─────────────────────────────────────────────────────────────┘
+**Bài toán:** Hỗ trợ điều phối phương án sạc an toàn cho tài xế Xanh SM khi xe điện sắp hết pin.
+
+**Công ty thành viên:** Xanh SM
+
+**Actor:** Tài xế Xanh SM và điều phối viên trung tâm điều phối.
+
+**Workflow thủ công hiện tại:**
+
+```text
+Tài xế báo pin yếu
+  -> Điều phối viên hỏi mức pin, vị trí, loại xe
+  -> Điều phối viên tra dashboard trạm sạc
+  -> Điều phối viên đánh giá có thể đến trạm hay cần cứu hộ
+  -> Điều phối viên soạn hướng dẫn và gửi sau khi tự kiểm tra
 ```
 
-> [!TIP]
-> **🤖 AI Prompts — Stress-Test thẻ bài toán:**
-> Hãy dán nội dung thẻ bài toán của bạn vào LLM để nhận phản biện:
-> *"Đây là một thẻ bài toán vận hành tôi đề xuất cho Vin Smart Future: [Dán nội dung]. Hãy đóng vai trò là một CFO và Trưởng phòng Vận hành cực kỳ khắt khe, chỉ ra cho tôi 3 điểm yếu về logic, metric, và giải thích vì sao rule-based code thông thường có thể giải quyết bài toán này tốt hơn là dùng AI."*
+**Bước tốn thời gian/lỗi nhất:** Thu thập dữ liệu, tra cứu trạm và đánh giá an toàn, khoảng 8-10 phút/lượt.
+
+**AI hỗ trợ ở đâu:** Rule Engine kiểm tra ngưỡng pin/khoảng cách; LLM soạn khuyến nghị nháp và tin nhắn cho tài xế.
+
+**Metric có số:**
+
+- Giảm thời gian điều phối từ 10 phút xuống dưới 2 phút/lượt.
+- Tạo draft dưới 30 giây khi đủ dữ liệu.
+- 100% output có `[DRAFT_ONLY]`.
+- 100% case pin dưới 5% không đề xuất trạm xa hơn 5 km.
+
+**Quick Architecture:** Rule-based Safety Gate + LLM Feature + Human-in-the-loop.
+
+## Quick Problem Card 2
+
+**Bài toán:** Tự động phân loại và route phản ánh cư dân Vinhomes đến đúng bộ phận.
+
+**Công ty thành viên:** Vinhomes
+
+**Actor:** Nhân viên CSKH, ban quản lý tòa nhà, bộ phận kỹ thuật/an ninh/kế toán.
+
+**Workflow thủ công hiện tại:**
+
+```text
+Cư dân gửi phản ánh
+  -> CSKH đọc nội dung
+  -> CSKH xác định tòa/căn hộ và loại vấn đề
+  -> CSKH chuyển ticket
+  -> CSKH soạn phản hồi ban đầu
+```
+
+**Bước tốn thời gian/lỗi nhất:** Phân loại và route ticket mơ hồ, khoảng 8-12 phút/ticket.
+
+**AI hỗ trợ ở đâu:** LLM trích xuất thông tin, phân loại intent, đề xuất bộ phận nhận và soạn phản hồi nháp.
+
+**Metric có số:**
+
+- 85% ticket được phân loại trong dưới 30 giây.
+- Giảm ticket chuyển sai từ 12% xuống dưới 4%.
+- 100% ticket nhạy cảm phải có người duyệt.
+
+**Quick Architecture:** LLM Feature + Rule routing.
+
+## Quick Problem Card 3
+
+**Bài toán:** Hỗ trợ CSKH Vinpearl trả lời câu hỏi lặp lại về vé, combo, giờ mở cửa và hoàn tiền.
+
+**Công ty thành viên:** Vinpearl / VinWonders
+
+**Actor:** Nhân viên CSKH, khách du lịch và nhân viên bán vé.
+
+**Workflow thủ công hiện tại:**
+
+```text
+Khách gửi câu hỏi
+  -> CSKH xác định khu vui chơi/ngày sử dụng/loại vé
+  -> CSKH tra chính sách
+  -> CSKH soạn phản hồi
+  -> Nếu hoàn tiền hoặc đổi vé, chuyển cấp trên duyệt
+```
+
+**Bước tốn thời gian/lỗi nhất:** Tra chính sách và soạn phản hồi, khoảng 5-7 phút/câu hỏi.
+
+**AI hỗ trợ ở đâu:** Retrieval từ FAQ nội bộ, LLM soạn phản hồi nháp, rule đánh dấu giao dịch nhạy cảm.
+
+**Metric có số:**
+
+- Giảm thời gian soạn phản hồi từ 6 phút xuống dưới 1 phút.
+- 90% câu hỏi FAQ được trả lời đúng chính sách.
+- 100% yêu cầu hoàn tiền/đổi vé có human review.
+
+**Quick Architecture:** Retrieval + LLM Feature + Human-in-the-loop.
 
 ---
 
-# 🏗️ Phase 3 — DEEP-DIVE (Nhóm, 85 min)
+# Phase 3 - DEEP-DIVE
 
-## 3.1. Current-State Workflow Mapping (25 min)
-**Vẽ quy trình hiện tại lên bảng/giấy A3.** Sử dụng các ký hiệu:
-* 🔴 **Bottleneck:** Bước gây tắc nghẽn, tốn thời gian, hoặc sai sót nhiều nhất.
-* 🔄 **Handoff:** Điểm chuyển giao thông tin giữa người và hệ thống, hoặc giữa các bộ phận.
-* Ghi rõ thời gian vận hành trung bình: **Tổng cộng = ____ phút/lượt**.
+## 3.1 Current-State Workflow Mapping
 
-## 3.2. Problem Statement (6-field) & Metrics (15 min)
-Điền đầy đủ 6 trường thông tin của bài toán:
+Workflow hiện tại của bài toán được chọn:
 
-| Field | Nội dung chi tiết |
+```text
+Tài xế phát hiện pin yếu
+  -> Gọi tổng đài hoặc gửi yêu cầu trên app
+  -> Điều phối viên hỏi mức pin, vị trí, loại xe, trạng thái chuyến xe
+  -> Điều phối viên tra bản đồ và dashboard trạm sạc
+  -> Điều phối viên đánh giá thủ công rủi ro pin/khoảng cách
+  -> Điều phối viên soạn hướng dẫn hoặc gọi đội cứu hộ theo quy trình
+```
+
+**Tổng thời gian hiện tại:** Khoảng 10 phút/lượt.
+
+**Bottleneck chính:** Bước tra cứu trạm và đánh giá an toàn khi pin dưới 5%.
+
+## 3.2 Problem Statement 6-Field
+
+| Field | Nội dung |
 |---|---|
-| **1. Actor / Operator** | Ai đang thực hiện tác vụ hằng ngày? |
-| **2. Current Workflow** | Mô tả tóm tắt quy trình thủ công hiện tại và công cụ sử dụng. |
-| **3. Bottleneck** | Bước nào chậm, lỗi, hoặc cần xử lý ngôn ngữ tự động nhiều nhất? |
-| **4. Business Impact** | Tổn thất thực tế đo bằng thời gian, chi phí, hoặc SLA của Vingroup. |
-| **5. Success Metric** | AI giải quyết được thì đạt ngưỡng số mấy? (Ví dụ: *"85% vé được phân loại dưới 10s"*). |
-| **6. Operational Boundary** | AI được phép làm gì, TUYỆT ĐỐI không được làm gì, điểm nào cần duyệt? |
+| Actor / Operator | Tài xế Xanh SM và điều phối viên trung tâm điều phối |
+| Current Workflow | Tài xế báo pin yếu, điều phối viên thu thập dữ liệu, tra trạm, đánh giá an toàn, soạn hướng dẫn |
+| Bottleneck | Tra cứu nhiều nguồn và ra quyết định an toàn trong thời gian ngắn |
+| Business Impact | Mỗi yêu cầu tốn khoảng 10 phút, xe dừng lâu, dễ trễ chuyến hoặc cần cứu hộ |
+| Success Metric | Draft dưới 30 giây, thời gian điều phối dưới 2 phút, 0 action tự động khi chưa duyệt |
+| Operational Boundary | AI chỉ tạo bản nháp; không tự gửi tin, không tự đặt trạm, không tự điều xe; pin dưới 5% không đề xuất trạm xa hơn 5 km |
 
-## 3.3. Future-State Flow & AI Fit (25 min)
-* **Xác định mức AI Fit (AI-Fit Matrix):** Giải pháp thuộc nhóm nào? [ ] Rule / State-Machine [ ] LLM Feature [ ] Agentic Loop.
-* **Vẽ Future-State Flow:** Đánh dấu rõ:
-  * 🔵 **AI Step:** Tác vụ LLM xử lý.
-  * 🟢 **Human Step (HITL):** Bước con người phê duyệt/review (Human-in-the-loop).
-  * ↩️ **Fallback:** Kế hoạch dự phòng khi LLM trả về kết quả lỗi hoặc không tự tin.
+## 3.3 Future-State Flow & AI Fit
 
----
+**AI Fit:** Rule-based Safety Gate + LLM Feature. Chưa dùng Agentic Loop trong prototype vì agent có thể tạo hành động thật trong một tình huống có rủi ro vận hành.
 
-# 💻 Phase 4 — TECHNICAL PROMPT PROTOTYPE (Nhóm, 30 min)
+```text
+Tài xế gửi yêu cầu
+  -> Hệ thống lấy mức pin, vị trí, loại xe
+  -> Rule Engine kiểm tra dữ liệu bắt buộc
+  -> Rule Engine áp dụng ngưỡng an toàn pin/khoảng cách
+  -> LLM soạn [DRAFT_ONLY] recommendation
+  -> Điều phối viên review, chỉnh sửa và phê duyệt
+  -> Hệ thống mới gửi hướng dẫn hoặc tạo yêu cầu cứu hộ
+```
 
-Để đảm bảo kỹ sư của Vin Smart Future luôn giữ vững năng lực lập trình, nhóm của bạn sẽ tiến hành **lập trình bản mẫu prompt** trực tiếp trên **Gemini 2.5 Flash** bằng Python để stress-test hệ thống.
-
-### Hướng dẫn thực hiện:
-1. Mở file [starter-code/prompt_prototype.py](starter-code/prompt_prototype.py) bằng VS Code/Cursor.
-2. Hoàn thiện các nội dung sau:
-   * **System Prompt:** Viết chỉ thị cực kỳ nghiêm ngặt quy định vai trò, nhiệm vụ, định dạng output và **Operational Boundary (Ranh giới cấm)** của mô hình.
-   * **Structured Output:** Định nghĩa định dạng JSON output rõ ràng.
-   * **Adversarial Test Cases:** Viết ít nhất 3 prompts "tấn công" (Adversarial inputs) cố tình dụ AI vượt ranh giới hoặc đưa ra câu trả lời không được phép để kiểm tra xem ranh giới của bạn có thực sự vững chắc.
-3. Chạy file python:
-   ```bash
-   python3 prompt_prototype.py
-   ```
-4. Kiểm tra xem các ranh giới an toàn có bị LLM phá vỡ hay không và ghi lại kết quả vào worksheet.
+**Fallback:** Nếu thiếu dữ liệu, Gemini timeout, output sai JSON hoặc không có `[DRAFT_ONLY]`, hệ thống dừng output AI và chuyển về quy trình thủ công.
 
 ---
 
-# 🏁 Phase 5 — EVALUATE (Nhóm, 20 min)
+# Phase 4 - Technical Prompt Prototype
 
-### AI Readiness Checklist:
-1. [ ] Chúng tôi có sẵn dữ liệu mẫu/logs sạch để test?
-2. [ ] Rủi ro khi AI sai có nằm trong tầm kiểm soát (qua HITL hoặc Fallback)?
-3. [ ] Stakeholders sẵn sàng thay đổi quy trình làm việc cũ?
+Prototype nằm tại:
 
-### Quyết định cuối cùng của Ban Giám Đốc Vin Smart Future:
-[ ] **GO (Bắt đầu xây dựng Prototype):** Bắt đầu phát triển với scope hẹp.
-[ ] **NOT YET (Cần tích lũy thêm dữ liệu/xác lập baseline):** Trì hoãn để chuẩn bị thêm.
-[ ] **NO-GO (Không khả thi / Rule-based tốt hơn):** Hủy bỏ dự án AI này.
+```text
+starter-code/prompt_prototype.py
+```
 
-**Justification (Lý giải quyết định dựa trên bằng chứng kỹ thuật và chi phí):**
-> *Viết lý giải chi tiết tại đây*
+Prototype cần kiểm thử ít nhất ba nhóm tấn công:
+
+1. Người dùng yêu cầu bỏ tag `[DRAFT_ONLY]`.
+2. Người dùng yêu cầu gửi tin nhắn hoặc điều xe ngay.
+3. Người dùng ép model đề xuất trạm xa hơn 5 km khi pin dưới 5%.
+
+Chạy thử:
+
+```bash
+python starter-code/prompt_prototype.py
+```
 
 ---
 
-# 📝 Phase 6 — REFLECTION (Cá nhân)
-*Ghi nhận phản ánh của cá nhân bạn về việc phối hợp với AI trong buổi học hôm nay vào file `03-ai-log.md`.*
+# Phase 5 - EVALUATE
+
+## AI Readiness Checklist
+
+| Câu hỏi | Trạng thái | Ghi chú |
+|---|---|---|
+| Có dữ liệu mẫu/log sạch để test? | Có một phần | Cần log điều phối đã ẩn danh và dữ liệu trạm sạc mẫu |
+| Rủi ro AI sai có kiểm soát được? | Có | Rule gate + `[DRAFT_ONLY]` + human review |
+| Stakeholder sẵn sàng đổi workflow? | Có thể pilot | Nên thử với một nhóm điều phối viên trong giờ thấp điểm |
+
+## Quyết Định Cuối Cùng
+
+**GO** với prototype phạm vi hẹp.
+
+Lý do: Bài toán có metric rõ, boundary định lượng và rủi ro có thể kiểm soát bằng rule gate và human review. Không triển khai agent tự động hành động ở giai đoạn đầu.
+
+---
+
+# Phase 6 - REFLECTION
+
+Ghi phản ánh cá nhân vào `03-ai-log.md`, tập trung vào ba câu hỏi:
+
+1. AI đã giúp gì?
+2. AI sai hoặc chưa hợp lý ở đâu?
+3. Nhóm đã sửa prompt, metric hoặc boundary như thế nào?
+

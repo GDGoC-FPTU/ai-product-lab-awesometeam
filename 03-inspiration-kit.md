@@ -1,48 +1,38 @@
-# Inspiration Kit — Gợi ý tìm bài toán (Vin Smart Future Edition)
+# Inspiration Kit - Gợi Ý Tìm Bài Toán
 
-> **Sử dụng khi bạn chưa nghĩ ra đủ 5 problems trong Phase 1. Đây không phải kịch bản bắt buộc — chỉ là gợi ý thực tế để kích hoạt tư duy sáng tạo của bạn.**
+> Dùng file này khi cần thêm ý tưởng cho Phase 1. Đây là tài liệu gợi ý, không thay thế bài làm chính. Bài nộp trong repo này vẫn thống nhất theo case **Trợ lý điều phối sạc khẩn cấp cho tài xế Xanh SM**.
 
----
+## 1. Ô Tô Và Di Chuyển Xanh
 
-## 🏛️ Gợi ý theo các công ty thành viên Vingroup
+| # | Công ty | Tên bài toán / Bottleneck | Lens | Mô tả ngắn |
+|---|---|---|---|---|
+| 1 | Xanh SM | Điều phối sạc khẩn cấp | Stakeholder Pain | Tài xế xe điện pin yếu cần phương án sạc hoặc cứu hộ nhanh, an toàn và có người duyệt. |
+| 2 | Xanh SM | Điều vận thông minh | Time-consuming | Tối ưu điểm đón và gán lại chuyến khi tài xế bị kẹt xe, thiếu pin hoặc khách đổi điểm đến. |
+| 3 | Xanh SM | Phân tích lý do hủy chuyến | AI-upgrade | Tóm tắt ghi âm, ghi chú tài xế và phản hồi khách hàng để tìm pattern lỗi vận hành. |
+| 4 | VinFast | Đối chiếu hóa đơn sạc điện | Repetitive | So khớp dữ liệu sạc từ trạm đối tác với hóa đơn thực tế gửi về hệ thống tài chính. |
+| 5 | VinFast | Dự đoán bảo trì pin | AI-upgrade | Phân tích log pin, chu kỳ sạc và tín hiệu lỗi để cảnh báo bảo trì trước khi xe gặp sự cố. |
 
-Để giúp bạn đóng vai trò xuất sắc tại **Vin Smart Future**, dưới đây là danh sách các bài toán thực tế đang diễn ra tại các công ty thành viên Vingroup mà bạn có thể chọn để Scoping:
+## 2. Đô Thị Và Dịch Vụ Khách Hàng
 
-### 🚗 1. Mảng Ô Tô & Di Chuyển Xanh (VinFast & Xanh SM)
+| # | Công ty | Tên bài toán / Bottleneck | Lens | Mô tả ngắn |
+|---|---|---|---|---|
+| 6 | Vinhomes | Phân loại phản ánh cư dân | Repetitive | Route phản ánh về mất nước, hỏng đèn, ồn ào hoặc phí dịch vụ đến đúng ban quản lý/bộ phận. |
+| 7 | Vinhomes | Trợ lý thủ tục cư dân | Time-consuming | Hỗ trợ cư dân chuẩn bị hồ sơ đăng ký thi công nội thất, vé gửi xe hoặc giấy xác nhận. |
+| 8 | Vinpearl | Tổng hợp review khách sạn | Stakeholder Pain | Lọc review tiêu cực khẩn cấp từ Booking, Agoda, Google Maps để gửi về quản lý cơ sở. |
+| 9 | Vinpearl / VinWonders | Trợ lý FAQ dịch vụ | Repetitive | Trả lời câu hỏi lặp lại về vé, giờ mở cửa, combo, đổi ngày và hoàn tiền bằng bản nháp có kiểm duyệt. |
 
-| # | Subsidiary | Tên bài toán / Bottleneck | Lens | Mô tả ngắn |
-|---|------------|---------------------------|------|------------|
-| 1 | **Xanh SM** | Điều vận thông minh (Smart Dispatching) | Tốn thời gian | Tối ưu hóa điểm đón taxi điện Xanh SM dựa trên phân tích ngôn ngữ tự nhiên từ tin nhắn tài xế và tọa độ GPS thực tế. |
-| 2 | **VinFast** | Trợ lý hướng dẫn trạm sạc thông minh | AI có thể tốt hơn | Tự động đề xuất lịch trình sạc tối ưu và trạm sạc trống phù hợp với loại cổng sạc (CCS2/GBT) của từng dòng xe điện (VF5, VF8, VF9). |
-| 3 | **VinFast** | Đối chiếu hóa đơn sạc điện đối tác | Lặp lại | So khớp dữ liệu sạc điện hằng tuần từ hàng nghìn trụ sạc liên kết ngoài với hóa đơn thực tế gửi về hệ thống tài chính. |
-| 4 | **Xanh SM** | Phân tích lý do hủy chuyến của khách hàng | Pain từ người khác | Tự động nghe ghi âm cuộc gọi hủy chuyến và ghi chú của tài xế để phân loại 10 lý do phổ biến nhất gây rò rỉ cuốc. |
-| 5 | **VinFast** | Chẩn đoán lỗi xe từ mô tả tiếng Việt của khách | AI có thể tốt hơn | Khách hàng mô tả tiếng Việt (ví dụ: *"xe đi qua gờ giảm tốc kêu cụp cụp ở bánh trước"*), hệ thống tự động phân loại mã lỗi kỹ thuật ban đầu. |
+## 3. Y Tế Và Giáo Dục
 
----
+| # | Công ty | Tên bài toán / Bottleneck | Lens | Mô tả ngắn |
+|---|---|---|---|---|
+| 10 | Vinmec | Tóm tắt hồ sơ xuất viện | Time-consuming | Trích xuất thông tin từ bệnh án điện tử, xét nghiệm và đơn thuốc để soạn bản tóm tắt cho bác sĩ duyệt. |
+| 11 | Vinmec | Phân loại lịch hẹn khám ban đầu | Stakeholder Pain | Gợi ý chuyên khoa phù hợp từ mô tả triệu chứng của khách hàng, luôn cần nhân viên y tế kiểm tra. |
+| 12 | VinUni | Phản hồi bài lab | Repetitive | Hỗ trợ autograder và LLM tạo phản hồi học tập cho sinh viên dựa trên lỗi code và rubric. |
 
-### 🏢 2. Mảng Đô Thị & Quản Lý Vận Hành (Vinhomes & Vinpearl)
+## Lưu Ý Khi Chọn Bài Toán
 
-| # | Subsidiary | Tên bài toán / Bottleneck | Lens | Mô tả ngắn |
-|---|------------|---------------------------|------|------------|
-| 6 | **Vinhomes** | Phân loại & Điều hướng phản ánh cư dân | Lặp lại | Phân loại tự động các khiếu nại (ví dụ: mất nước, hỏng đèn, ồn ào) gửi qua App Vinhomes Resident đến đúng ban quản lý từng tòa nhà. |
-| 7 | **Vinhomes** | Trợ lý cư dân ảo hỗ trợ thủ tục hành chính | AI có thể tốt hơn | Hỗ trợ cư dân tra cứu và draft nhanh hồ sơ đăng ký thi công nội thất, đăng ký vé gửi xe hằng tháng mà không cần gặp trực tiếp ban quản lý. |
-| 8 | **Vinpearl** | Tổng hợp & Phân tích review khách sạn | Pain từ người khác | Quét qua các review trên Booking.com, Agoda, Google Map của Vinpearl để lọc ra các phàn nàn khẩn cấp (ví dụ: *"phòng bẩn"*, *"nhân viên thái độ tệ"*) gửi về Manager. |
-| 9 | **Vinpearl** | Tự động hóa kiểm tra phòng trống & Booking | Tốn thời gian | Đọc email đặt phòng theo đoàn (Group Booking) phức tạp từ các công ty lữ hành để tự động kiểm tra quỹ phòng trống và draft lệnh book. |
+1. **Problem First, AI Second:** Chọn bài toán có workflow rõ trước khi chọn model.
+2. **Metric phải đo được:** Ưu tiên thời gian xử lý, tỷ lệ route sai, tỷ lệ chấp nhận, số lỗi boundary.
+3. **Boundary phải cụ thể:** Ghi rõ AI được phép làm gì, không được phép làm gì và khi nào phải chuyển cho người duyệt.
+4. **Rule trước Agent:** Với tình huống an toàn vận hành, tài chính, pháp lý hoặc y tế, rule-based gate và human review thường cần thiết hơn agent tự động.
 
----
-
-### 🏥 3. Mảng Y Tế & Giáo Dục (Vinmec & VinUni)
-
-| # | Subsidiary | Tên bài toán / Bottleneck | Lens | Mô tả ngắn |
-|---|------------|---------------------------|------|------------|
-| 10 | **Vinmec** | Soạn thảo tóm tắt hồ sơ xuất viện (Discharge Summary)| Tốn thời gian | Trích xuất thông tin lâm sàng từ bệnh án điện tử, xét nghiệm và ghi chú của bác sĩ để soạn thảo bản tóm tắt xuất viện bằng ngôn ngữ dễ hiểu cho bệnh nhân. |
-| 11 | **Vinmec** | Trợ lý phân loại lịch hẹn khám ban đầu | Pain từ người khác | Khách hàng mô tả triệu chứng qua chatbot, hệ thống tự động gợi ý đúng chuyên khoa (ví dụ: phân biệt Tim mạch vs Hô hấp) để xếp lịch. |
-| 12 | **VinUni** | Tự động hóa chấm điểm và phản hồi bài lab | Lặp lại | Hệ thống chấm code autograder, tự động dùng LLM để phân tích lỗi cú pháp/logic và draft phản hồi mang tính sư phạm hỗ trợ sinh viên học tập. |
-
----
-
-## 💡 Lưu ý khi chọn bài toán:
-
-1. **Chọn bài toán bạn hiểu rõ nhất:** Hãy ưu tiên chọn bài toán mà ít nhất một thành viên trong nhóm của bạn hiểu rõ quy trình thực tế hiện tại (Current-state workflow).
-2. **Operational Boundary quan trọng nhất:** Hãy chắc chắn ranh giới AI được vẽ ra là hợp lý. Ở các mảng nhạy cảm như **Vinmec (Y Tế)** hay **VinFast (An toàn xe)**, ranh giới an toàn phải cực kỳ nghiêm ngặt và luôn luôn yêu cầu **Human-in-the-loop (Bác sĩ/Kỹ sư phê duyệt)**.
-3. **Problem First, AI Second:** Đừng cố gắng tìm bài toán phức tạp chỉ để dùng "Multi-Agent". Một giải pháp rule-based hoặc LLM feature đơn giản mang lại giá trị cao luôn được điểm tối đa.

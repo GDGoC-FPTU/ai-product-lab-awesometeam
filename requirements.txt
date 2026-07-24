@@ -1,2 +1,4 @@
-# Environment Dependencies
-# List all required python packages here.
+# Thư viện cần thiết cho lab
+google-genai
+google-generativeai
+pytest
